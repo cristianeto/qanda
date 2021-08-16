@@ -48,18 +48,19 @@ class questionsAndAnswersCommand extends Command
                 'Practice',
                 'Stats',
                 'Reset',
-            ],
-            null
+            ]
         );
 
-        //$this->info('You chose '. $choice . ' option!');
+        switch ($choice){
+            case "Create a question": $this->createQuestion();
+            break;
+            case "List all questions": $this->listAllQuestions();
+            break;
+            default: break;
 
-        if ($choice =='Create a question') {
-            $this->createQuestion();
-        }elseif ($choice == 'List all questions'){
-            $this->listAllQuestions();
         }
 
+//        $this->call('qanda:interactive');
         return 0;
     }
 
@@ -67,7 +68,7 @@ class questionsAndAnswersCommand extends Command
         $this->info('Creating a question...');
         $question = $this->ask('Write a question');
         $answer = $this->ask('Write a answer to the previous question');
-        $question = Question::create([
+        Question::create([
             'description'=> $question,
             'answer' => $answer,
             'status' => 'NOT ANSWERED',
@@ -77,7 +78,12 @@ class questionsAndAnswersCommand extends Command
     }
 
     protected function listAllQuestions(){
-//        Question::all();
-        $this->info( "fetching all questions");
+        $this->info( "Fetching all my questions...");
+//        dd(Question::all(['id','description', 'answer'])->toArray());
+        $this->table(
+            ['Question', 'Answer'],
+            Question::all(['description', 'answer'])
+        );
+
     }
 }

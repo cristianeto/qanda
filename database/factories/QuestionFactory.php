@@ -27,7 +27,7 @@ class QuestionFactory extends Factory
             'answer' => $this->faker->word,
 //            'status' => $this->faker->randomElement(['NOT ANSWERED']),
             'status' => 'NOT ANSWERED',
-            'user_id' => User::factory(),
+            'user_id' => User::factory()->create(),
         ];
     }
 }
