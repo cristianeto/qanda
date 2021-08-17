@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Hash;
 
 class questionsAndAnswersCommand extends Command
 {
@@ -13,7 +14,7 @@ class questionsAndAnswersCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'qanda:interactive';
+    protected $signature = 'qanda:interactive {user=guest@test.com}';
 
     /**
      * The console command description.
@@ -39,9 +40,13 @@ class questionsAndAnswersCommand extends Command
      */
     public function handle()
     {
-        $this->info("*** Welcome to QANDA program***");
+        $emailUser = $this->argument('user');
+        $this->createUser($emailUser);
+        $user = $this->getUser($emailUser);
+
+        $this->info("*** Welcome ".$user->name." ***");
         $choice = $this->choice(
-            'Choose an option between [0-4], or write "exit" to stop this program:',
+            'Choose an option between [0-4], or write "exit" to stop this program',
             [
                 'Create a question',
                 'List all questions',
@@ -52,9 +57,9 @@ class questionsAndAnswersCommand extends Command
         );
 
         switch ($choice){
-            case "Create a question": $this->createQuestion();
+            case "Create a question": $this->createQuestion($user);
             break;
-            case "List all questions": $this->listAllQuestions();
+            case "List all questions": $this->listAllQuestions($user);
             break;
             default: break;
 
@@ -64,7 +69,7 @@ class questionsAndAnswersCommand extends Command
         return 0;
     }
 
-    protected function createQuestion(){
+    protected function createQuestion($user){
         $this->info('Creating a question...');
         $question = $this->ask('Write a question');
         $answer = $this->ask('Write a answer to the previous question');
@@ -72,18 +77,35 @@ class questionsAndAnswersCommand extends Command
             'description'=> $question,
             'answer' => $answer,
             'status' => 'NOT ANSWERED',
-            'user_id' => 1
+            'user_id' => $user->id
         ]);
 
     }
 
-    protected function listAllQuestions(){
+    protected function listAllQuestions($user){
         $this->info( "Fetching all my questions...");
 //        dd(Question::all(['id','description', 'answer'])->toArray());
         $this->table(
             ['Question', 'Answer'],
-            Question::all(['description', 'answer'])
+//            Question::all(['description', 'answer'])
+            Question::select('description', 'answer')->where('user_id', $user->id)->get()
         );
 
+    }
+
+    protected function createUser($emailUser){
+        $user = User::where('email', $emailUser)->first();
+        if(!isset($user)) {
+            $parts = explode("@", $emailUser);
+            User::create([
+                'name' => ucfirst($parts[0]),
+                'email' => $emailUser,
+                'password' => Hash::make('password'),
+            ]);
+        }
+    }
+
+    protected function getUser($emailUser){
+        return User::where('email', $emailUser)->firstOrFail();
     }
 }
