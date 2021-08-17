@@ -61,6 +61,8 @@ class questionsAndAnswersCommand extends Command
             break;
             case "List all questions": $this->listAllQuestions($user);
             break;
+            case "Practice": $this->practice($user);
+            break;
             default: break;
 
         }
@@ -84,15 +86,41 @@ class questionsAndAnswersCommand extends Command
 
     protected function listAllQuestions($user){
         $this->info( "Fetching all my questions...");
-//        dd(Question::all(['id','description', 'answer'])->toArray());
         $this->table(
             ['Question', 'Answer'],
-//            Question::all(['description', 'answer'])
             Question::select('description', 'answer')->where('user_id', $user->id)->get()
         );
 
     }
 
+    /**
+     * @param $user
+     */
+    protected function practice($user){
+        $this->info( "Practicing...");
+        $questions = Question::where('status','!=','NOT ANSWERED')->get();
+
+        $this->table(
+            ['Question', 'Answer', 'Status'],
+            Question::select('description', 'answer', 'status')->where('user_id', $user->id)->get()
+        );
+
+        $bar = $this->output->createProgressBar(count($questions));
+
+        $bar->start();
+
+        foreach ($questions as $question) {
+            $this->performTask($question);
+
+            $bar->advance();
+        }
+
+        $bar->finish();
+    }
+
+    /**
+     * @param $emailUser
+     */
     protected function createUser($emailUser){
         $user = User::where('email', $emailUser)->first();
         if(!isset($user)) {
