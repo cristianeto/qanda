@@ -44,7 +44,13 @@ class questionsAndAnswersCommand extends Command
         $this->createUser($emailUser);
         $user = $this->getUser($emailUser);
 
-        $this->info("*** Welcome ".$user->name." ***");
+        $this->info("*** Welcome " . $user->name . " ***");
+        $this->menu($user);
+
+        return 0;
+    }
+
+    protected function menu($user){
         $choice = $this->choice(
             'Choose an option between [0-4], or write "exit" to stop this program',
             [
@@ -53,28 +59,30 @@ class questionsAndAnswersCommand extends Command
                 'Practice',
                 'Stats',
                 'Reset',
-            ]
+            ],
+            0
         );
 
-        switch ($choice){
-            case "Create a question": $this->createQuestion($user);
-            break;
-            case "List all questions": $this->listAllQuestions($user);
-            break;
-            case "Practice": $this->practice($user);
-            break;
-            default: break;
-
+        switch ($choice) {
+            case "Create a question":
+                $this->createQuestion($user);
+                break;
+            case "List all questions":
+                $this->listAllQuestions($user);
+                break;
+            case "Practice":
+                $this->practice($user);
+                break;
+            case "exit":
+                $this->stop();
+                break;
         }
-
-//        $this->call('qanda:interactive');
-        return 0;
     }
 
     protected function createQuestion($user){
         $this->info('Creating a question...');
-        $question = $this->ask('Write a question');
-        $answer = $this->ask('Write a answer to the previous question');
+        $question = $this->ask('Write a question')||"";
+        $answer = $this->ask('Write a answer to the previous question')||"";
         Question::create([
             'description'=> $question,
             'answer' => $answer,
@@ -110,7 +118,7 @@ class questionsAndAnswersCommand extends Command
         $bar->start();
 
         foreach ($questions as $question) {
-            $this->performTask($question);
+//            $this->performTask($question);
 
             $bar->advance();
         }
@@ -135,5 +143,9 @@ class questionsAndAnswersCommand extends Command
 
     protected function getUser($emailUser){
         return User::where('email', $emailUser)->firstOrFail();
+    }
+
+    protected function stop(){
+        $this->info("Exiting...");
     }
 }
