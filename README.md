@@ -20,7 +20,7 @@ Inside your projectdo the following steps:
 2. Installing packages with composer
 `composer update`  
   
-3. Creating the `.env` file and config with your own credentials.  
+3. Creating the `.env` file and config it with your own credentials.  
   
 4. This program is using Sail to containerize this Laravel Application, so execute the following command.  
 `./vendor/bin/sail up` . Be careful with the ports that your are using currently.  
@@ -50,17 +50,24 @@ The previous command allows you to interact with CLI program as a specific user,
   
 After that, you will see the MAIN MENU with **6 options** to choose.  
   
-[0] Create a questions
-[1]. List all questions
-[2]. Practice
-[3] Stats  
-[4] Reset
-[5] Exit
+[0] Create a questions.
+
+[1] List all questions.
+
+[2] Practice.
+
+[3] Stats.
   
-## Testing  
+[4] Reset.
+
+[5] Exit.
+
+**NOTE:** Unfortunately, after each choice, the QANDA APP exits command mode, you need to run the command `./vendor/bin/sail artisan qanda:interactive`, 
+to interact again with it. 
+
+## Testing
+  
 `./vendor/bin/sail artisan test`
 
 ### [IMPORTANT] 
-1. After running tests your database was refreshed to empty. Please, run the seeders again
-2. Unfortunately, after each choice, the QANDA APP exits command mode, you need to run the command `./vendor/bin/sail artisan qanda:interactive`, 
-to interact again with it. 
+1. After running tests your database was refreshed to empty. Please, run the seeders again.
