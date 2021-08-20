@@ -70,4 +70,4 @@ to interact again with it.
 `./vendor/bin/sail artisan test`
 
 ### [IMPORTANT] 
-1. After running tests your database was refreshed to empty. Please, run the seeders again.
+1. After running tests your database will be refreshed to empty. Please, run the seeders again.
