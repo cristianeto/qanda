@@ -24,13 +24,16 @@ class CreateQuestionsTest extends TestCase
             'Exit',
         ];
     }
-
     /** @test */
     public function guests_can_create_a_question()
     {
         //Arrange
-        $question = Question::factory()->create();
-
+        $question = Question::factory()->raw(['description'=>'desc', 'answer'=> 'ans', 'status'=> 'NOT ANSWERED']);
+        $this->assertDatabaseMissing('questions', [
+            'description' => $question['description'],
+            'answer' => $question['answer'],
+            'status'=> $question['status'],
+        ]);
         //Act
         $this->artisan('qanda:interactive')
 
@@ -38,13 +41,13 @@ class CreateQuestionsTest extends TestCase
             ->expectsOutput('*** Welcome Guest ***')
             ->expectsChoice('Choose an option between 0-5', 'Create a question', $this->options)
             ->expectsOutput('Creating a question...')
-            ->expectsQuestion('Write a question',$question->description)
-            ->expectsQuestion('Write a answer to the previous question',$question->answer)
+            ->expectsQuestion('Write a question',$question['description'])
+            ->expectsQuestion('Write a answer to the previous question',$question['answer'])
             ->assertExitCode(0);
         $this->assertDatabaseHas('questions', [
-            'description' => $question->description,
-            'answer' => $question->answer,
-            'status'=> $question->status,
+            'description' => $question['description'],
+            'answer' => $question['answer'],
+            'status'=> $question['status'],
         ]);
     }
 
@@ -52,22 +55,26 @@ class CreateQuestionsTest extends TestCase
     public function a_specific_user_can_create_a_question()
     {
         //Arrange
-        $question = Question::factory()->create();
-
+        $question = Question::factory()->raw(['description'=>'desc', 'answer'=> 'ans', 'status'=> 'NOT ANSWERED']);
+        $this->assertDatabaseMissing('questions', [
+            'description' => $question['description'],
+            'answer' => $question['answer'],
+            'status'=> $question['status'],
+        ]);
         //Act
        $this->artisan('qanda:interactive cris@test.com')
 
         //Assert
             ->expectsOutput('*** Welcome Cris ***')
-            ->expectsChoice('Choose an option between 0-5', 'Create a question', $this->options)
-            ->expectsOutput('Creating a question...')
-            ->expectsQuestion('Write a question',$question->description)
-            ->expectsQuestion('Write a answer to the previous question',$question->answer)
-            ->assertExitCode(0);
+           ->expectsChoice('Choose an option between 0-5', 'Create a question', $this->options)
+           ->expectsOutput('Creating a question...')
+           ->expectsQuestion('Write a question',$question['description'])
+           ->expectsQuestion('Write a answer to the previous question',$question['answer'])
+           ->assertExitCode(0);
         $this->assertDatabaseHas('questions', [
-            'description' => $question->description,
-            'answer' => $question->answer,
-            'status'=> $question->status,
+            'description' => $question['description'],
+            'answer' => $question['answer'],
+            'status'=> $question['status'],
         ]);
     }
 }

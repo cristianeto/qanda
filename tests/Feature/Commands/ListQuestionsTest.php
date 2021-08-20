@@ -75,7 +75,7 @@ class ListQuestionsTest extends TestCase
     }
 
     /** @test */
-    public function guests_can_list_his_questions_for_practicing()
+    public function can_list_his_questions_for_practicing()
     {
         //Arrange
         $user = User::factory()->create(['name'=>'Guest', 'email'=>'guest@test.com', 'password'=>'password']);
@@ -101,31 +101,11 @@ class ListQuestionsTest extends TestCase
                 [$correctQuestions[0]->id, $correctQuestions[0]->description, $correctQuestions[0]->status],
                 [$correctQuestions[1]->id, $correctQuestions[1]->description, $correctQuestions[1]->status],
                 [$incorrectQuestion->id, $incorrectQuestion->description, $incorrectQuestion->status],
-            ])->assertExitCode(0);
+            ])
+            ->expectsQuestion('Choose a question ID or write stop', $NotAnsweredQuestions[2]->id)
+            ->expectsQuestion($NotAnsweredQuestions[2]->description, $NotAnsweredQuestions[2]->answer)
+            ->expectsOutput("Correct!")
+            ->assertExitCode(0);
     }
 
-    /** @test */
-    public function a_specific_user_can_list_his_questions_for_practicing()
-    {
-        //Arrange
-        $user = User::factory()->create();
-        $questions = Question::factory()->count(3)->create(['user_id'=>$user->id]);
-
-        //Act
-        $this->artisan('qanda:interactive '.$user->email)
-
-        //Assert
-            ->expectsOutput('*** Welcome '.$user->name.' ***')
-            ->expectsChoice('Choose an option between 0-5', 'Practice' , $this->options)
-            ->expectsOutput('Practicing...')
-            ->expectsTable([
-                'ID',
-                'Question',
-                'Status',
-            ], [
-                [$questions[0]->id, $questions[0]->description, $questions[0]->status],
-                [$questions[1]->id, $questions[1]->description, $questions[1]->status],
-                [$questions[2]->id, $questions[2]->description, $questions[2]->status],
-            ])->assertExitCode(0);
-    }
 }
