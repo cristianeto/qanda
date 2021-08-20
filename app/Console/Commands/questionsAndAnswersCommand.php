@@ -109,6 +109,19 @@ class questionsAndAnswersCommand extends Command
 
         $this->info("bye Practicing");
 
+    }
+
+    private function stats($user)
+    {
+        $allQuestions= Question::getAllByUser($user);
+        $answeredQuestions= Question::getAnsweredByUser($user);
+        $correctQuestions= Question::getCorrectByUser($user);
+
+        $this->info($user->name. ', these are your stats');
+
+        $this->line('Total amount of questions: '.$allQuestions->count());
+        $this->line('% of questions that have an answer: '. $this->percentageCompletion($allQuestions, $answeredQuestions).'%');
+        $this->line('% of questions that have a correct answer: '. $this->percentageCompletion($allQuestions, $correctQuestions).'%');
 
     }
 
@@ -129,10 +142,10 @@ class questionsAndAnswersCommand extends Command
         $table->render();
     }
 
-    protected function percentageCompletion($allQuestions, $correctQuestions)
+    protected function percentageCompletion($allQuestions, $someQuestions)
     {
         if(count($allQuestions)===0) return 0.0;
-        return round(($correctQuestions->count()/$allQuestions->count())*100,1);
+        return round(($someQuestions->count()/$allQuestions->count())*100,1);
     }
 
     protected function stop($user){
@@ -172,18 +185,5 @@ class questionsAndAnswersCommand extends Command
             $this->line('Incorrect!');
             $question->update(['status' => 'INCORRECT']);
         }
-    }
-
-    private function stats($user)
-    {
-        $allQuestions= Question::getAnsweredByUser($user);
-        $answeredQuestions= Question::getAnsweredByUser($user);
-        $correctQuestions= Question::getCorrectByUser($user);
-
-        $this->line('Total amount of questions: '.$allQuestions->count());
-        $this->line('% of questions that have an answer: '. $this->percentageCompletion($allQuestions, $answeredQuestions));
-        $this->line('% of questions that have a correct answer: '. $this->percentageCompletion($allQuestions, $correctQuestions));
-
-
     }
 }
