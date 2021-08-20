@@ -10,7 +10,9 @@ The Best interactive CLI program for Question and Answer practice, _ever!_.
 - Reset  
 - Exit  
   
-## Config 1. Clonning the repositorio on your own machine.  
+## Config 
+
+1. Clonning the repositorio on your own machine.  
 `git clone`  
   
 2. Creating the `.env` file and config with your own credentials.  
@@ -53,7 +55,7 @@ After that, you will see the MAIN MENU with **6 options** to choose.
 ## Testing  
 `./vendor/bin/sail artisan test`
 
-###[IMPORTANT] 
+### [IMPORTANT] 
 1. After running tests your database was refreshed to empty. Please, run the seeders again
 2. Unfortunately, after each choice, the QANDA APP exits command mode, you need to run the command `./vendor/bin/sail artisan qanda:interactive`, 
 to interact again with it. 
