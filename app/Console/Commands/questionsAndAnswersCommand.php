@@ -60,6 +60,9 @@ class questionsAndAnswersCommand extends Command
             case "Stats":
                 $this->stats($user);
                 break;
+            case "Reset":
+                $this->reset($user);
+                break;
             case "Exit":
                 $this->stop($user);
                 break;
@@ -125,6 +128,17 @@ class questionsAndAnswersCommand extends Command
 
     }
 
+    private function reset($user)
+    {
+        $this->info("Erasing all practice progress...");
+
+        $answeredQuestions = Question::getAnsweredByUser($user);
+
+        foreach ($answeredQuestions as $question){
+            $question->update(['status'=> 'NOT ANSWERED']);
+        }
+    }
+
     protected function printTable($allQuestions, $correctQuestions)
     {
         $table = new Table($this->output);
@@ -154,22 +168,34 @@ class questionsAndAnswersCommand extends Command
         exit();
     }
 
-    private function answerQuestion($user)
+    protected function answerQuestion($user)
     {
         $idQuestion = $this->ask('Choose a question ID or write stop');
 
         if($idQuestion=== 'stop') return $this->menu($user);
 
-        $validator = Validator::make(['id'=>$idQuestion], ['id'=>['required','exists:questions']]);
+        $validator = Validator::make([
+            'id'=>$idQuestion,
+            'user_id'=> $user->id
+        ],
+            [
+                'id'=>['required','exists:questions'],
+                'user_id' => ['required']
+            ]);
         if ($validator->fails()) {
             foreach ($validator->errors()->all() as $error) {
                 $this->error($error);
             }
             return $this->answerQuestion($user);
         }
-//        $validator->errors()->all();
 
-        $question = Question::findOrFail($idQuestion);
+        $question = Question::where('id', $idQuestion)->where('user_id', $user->id)->first();
+
+        if (!Question::where('id', $idQuestion)->where('user_id', $user->id)->exists()) {
+            $this->error('Question with ID '. $idQuestion.' does not belong to you!');
+            return $this->answerQuestion($user);
+        }
+
         if ($question->status === 'CORRECT') {
             $this->error('Choose other question ID!');
              return $this->answerQuestion($user);
@@ -178,7 +204,7 @@ class questionsAndAnswersCommand extends Command
         $answer = $this->ask($question->description);
 
 
-        if($answer === $question->answer){
+        if(strtolower($answer) === strtolower($question->answer)){
             $this->line('Correct!');
             $question->update(['status' => 'CORRECT']);
         }else{
