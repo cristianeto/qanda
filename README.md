@@ -12,18 +12,23 @@ The Best interactive CLI program for Question and Answer practice, _ever!_.
   
 ## Config 
 
+Inside your projectdo the following steps:
+
 1. Clonning the repositorio on your own machine.  
 `git clone`  
+
+2. Installing packages with composer
+`composer update`  
   
-2. Creating the `.env` file and config with your own credentials.  
+3. Creating the `.env` file and config with your own credentials.  
   
-3. This program is using Sail to containerize this Laravel Application, so execute the following command.  
+4. This program is using Sail to containerize this Laravel Application, so execute the following command.  
 `./vendor/bin/sail up` . Be careful with the ports that your are using currently.  
   
-4. Migrating tables and so on.  
+5. Migrating tables and so on.  
 `./vendor/bin/sail artisan migrate`.  
   
-5. Seeding in your database: to create some questions and users.  
+6. Seeding in your database: to create some questions and users.  
 `./vendor/bin/sail artisan db:seed`  
   
 ## How to use  
