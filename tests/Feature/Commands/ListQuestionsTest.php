@@ -41,12 +41,13 @@ class ListQuestionsTest extends TestCase
             ->expectsChoice('Choose an option between 0-5', 'List all questions' , $this->options)
             ->expectsOutput('Fetching all my questions...')
             ->expectsTable([
+                'ID',
                 'Question',
                 'Answer',
             ], [
-                [$questions[0]->description, $questions[0]->answer],
-                [$questions[1]->description, $questions[1]->answer],
-                [$questions[2]->description, $questions[2]->answer],
+                [$questions[0]->id, $questions[0]->description, $questions[0]->answer],
+                [$questions[1]->id, $questions[1]->description, $questions[1]->answer],
+                [$questions[2]->id, $questions[2]->description, $questions[2]->answer],
             ])->assertExitCode(0);
     }
 
@@ -65,12 +66,13 @@ class ListQuestionsTest extends TestCase
             ->expectsChoice('Choose an option between 0-5', 'List all questions' , $this->options)
             ->expectsOutput('Fetching all my questions...')
             ->expectsTable([
+                'ID',
                 'Question',
                 'Answer',
             ], [
-                [$questions[0]->description, $questions[0]->answer],
-                [$questions[1]->description, $questions[1]->answer],
-                [$questions[2]->description, $questions[2]->answer],
+                [$questions[0]->id, $questions[0]->description, $questions[0]->answer],
+                [$questions[1]->id, $questions[1]->description, $questions[1]->answer],
+                [$questions[2]->id, $questions[2]->description, $questions[2]->answer],
             ])->assertExitCode(0);
     }
 

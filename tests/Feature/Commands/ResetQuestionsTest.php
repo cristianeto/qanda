@@ -2,10 +2,10 @@
 
 namespace Tests\Feature\Commands;
 
-use App\Models\Question;
-use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Models\User;
+use App\Models\Question;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ResetQuestionsTest extends TestCase
 {

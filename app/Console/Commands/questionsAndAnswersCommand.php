@@ -5,9 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationData;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -27,7 +25,11 @@ class questionsAndAnswersCommand extends Command
 
         $this->info("*** Welcome " . $user->name . " ***");
 
-        $this->menu($user);
+//        while ($this->run) {
+            $this->menu($user);
+//        }
+
+        $this->info('Bye bye '.$user->name);
 
         return 0;
     }
@@ -64,13 +66,10 @@ class questionsAndAnswersCommand extends Command
                 $this->reset($user);
                 break;
             case "Exit":
-                $this->stop($user);
+                $this->stop();
                 break;
-//            default:
-//                $this->menu($user);
-//                break;
+
         }
-//        return $this->menu($user);
     }
 
     protected function createQuestion($user){
@@ -89,16 +88,14 @@ class questionsAndAnswersCommand extends Command
     protected function listAllQuestions($user){
         $this->info( "Fetching all my questions...");
         $this->table(
-            ['Question', 'Answer'],
-            Question::select('description', 'answer')->where('user_id', $user->id)->get()
+            ['ID', 'Question', 'Answer'],
+            Question::select('id', 'description', 'answer')->where('user_id', $user->id)->get()
         );
 
     }
 
-    /**
-     * @param $user
-     */
     protected function practice($user){
+
         $this->info( "Practicing...");
 
         $allQuestions = Question::getAllByUser($user);
@@ -139,6 +136,8 @@ class questionsAndAnswersCommand extends Command
         }
     }
 
+    /** Auxiliary methods*/
+
     protected function printTable($allQuestions, $correctQuestions)
     {
         $table = new Table($this->output);
@@ -154,18 +153,6 @@ class questionsAndAnswersCommand extends Command
         );
 
         $table->render();
-    }
-
-    protected function percentageCompletion($allQuestions, $someQuestions)
-    {
-        if(count($allQuestions)===0) return 0.0;
-        return round(($someQuestions->count()/$allQuestions->count())*100,1);
-    }
-
-    protected function stop($user){
-        $this->info("Bye bye ".$user->name."...");
-        $this-> run = false;
-        exit();
     }
 
     protected function answerQuestion($user)
@@ -191,7 +178,7 @@ class questionsAndAnswersCommand extends Command
 
         $question = Question::where('id', $idQuestion)->where('user_id', $user->id)->first();
 
-        if (!Question::where('id', $idQuestion)->where('user_id', $user->id)->exists()) {
+        if (!$question) {
             $this->error('Question with ID '. $idQuestion.' does not belong to you!');
             return $this->answerQuestion($user);
         }
@@ -211,5 +198,16 @@ class questionsAndAnswersCommand extends Command
             $this->line('Incorrect!');
             $question->update(['status' => 'INCORRECT']);
         }
+        return 0;
+    }
+
+    protected function percentageCompletion($allQuestions, $someQuestions)
+    {
+        if(count($allQuestions)===0) return 0.0;
+        return round(($someQuestions->count()/$allQuestions->count())*100,1);
+    }
+
+    protected function stop(){
+        $this-> run = false;
     }
 }
